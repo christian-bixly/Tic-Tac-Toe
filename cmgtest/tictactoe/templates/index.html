@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+    <link rel='stylesheet' type='text/css' href='css/tictactoe/index.css' />
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        var player_char = 'X'
+        
+        $(document).ready(function(){
+            $('.cell').click(function(){
+                if($(this).html() != '_'){
+                    alert('Illegal move!');
+                    return;
+                }
+                
+                $(this).html(player_char);
+                
+                game_loop();
+            });
+        });
+        
+        function char_at(row, col){
+            return $('#'+row+'_'+col).html();
+        }
+        
+        function game_loop(){
+            // Check for win condition
+            
+            // Check horizontals
+            for(var i = 0; i < 3; i++){
+                var ch = char_at(i, 0); // Get first character in row
+                
+                if(ch == '_'){
+                    continue;
+                }
+                
+                // All characters in the row match
+                if(ch == char_at(i, 1) && ch == char_at(i, 2)){
+                    // Highlight row
+                    
+                    if(ch == player_char){
+                        player_victory();
+                    }
+                    else{
+                        ai_victory();
+                    }
+                    
+                    return;
+                }
+            }
+            
+            // Check verticals
+            for(var i = 0; i < 3; i++){
+                var ch = char_at(0, i); // Get first character in column
+                
+                if(ch == '_'){
+                    continue;
+                }
+                
+                // All characters in the column match
+                if(ch == char_at(1, i) && ch == char_at(2, i)){
+                    // Highlight column
+                    
+                    if(ch == player_char){
+                        player_victory();
+                    }
+                    else{
+                        ai_victory();
+                    }
+                    
+                    return;
+                }
+            }
+            
+            // Check left diagonal
+            var ch = char_at(0, 0);
+            
+            if(ch != '_'){
+                if(ch == char_at(1, 1) && ch == char_at(2, 2)){
+                    // Highlight diagonal
+                    
+                    if(ch == player_char){
+                        player_victory();
+                    }
+                    else{
+                        ai_victory();
+                    }
+                    
+                    return;
+                }
+            }
+            
+            // Check right diagonal
+            var ch = char_at(0, 2);
+            
+            if(ch != '_'){
+                if(ch == char_at(1, 1) && ch == char_at(2, 0)){
+                    // Highlight diagonal
+                    
+                    if(ch == player_char){
+                        player_victory();
+                    }
+                    else{
+                        ai_victory();
+                    }
+                    
+                    return;
+                }
+            }
+            
+            // Check for draw
+            var is_draw = true;
+            for(var i = 0; i < 3; i++){
+                for(var j = 0; j < 3; j++){
+                    if(char_at(i, j) == '_'){
+                        // There is still a possible move
+                        is_draw = false;
+                        break;
+                    }
+                }
+            }
+            
+            if(is_draw){
+                no_victory();
+                return;
+            }
+            
+            
+        }
+        
+        function player_victory(){
+            alert('You won!');
+        }
+        
+        function ai_victory(){
+            alert('You lost');
+        }
+        
+        function no_victory(){
+            alert("It's a draw!");
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div id="stage">
+        <table>
+            {% for row in rows %}
+                <tr>
+                    {% for col in cols %}
+                        <td><div id="{{ row }}_{{ col }}" class="cell">_</a></td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
