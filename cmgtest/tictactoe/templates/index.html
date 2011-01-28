@@ -8,7 +8,7 @@
     <script type="text/javascript">
         var x_char = '{{ x_char }}',
             o_char = '{{ o_char }}',
-            player_char = x_char,
+            player_char = null,
             board = [];
         
         $(document).ready(function(){
@@ -19,6 +19,17 @@
                     board[i][j] = null;
                 }
             }
+            
+            $('.piece_option').click(function(){
+                var results = $(this).attr('id').match(/^piece_({{x_char}}|{{ o_char }})$/);
+                
+                player_char = results[1];
+                
+                $('#piece_select').hide();
+                $('#board').show();
+                
+                game_loop();
+            });
             
             $('.cell').click(function(){
                 if($(this).html() != '_'){
@@ -212,14 +223,20 @@
 
 {% block content %}
     <div id="stage">
-        <table>
-            {% for row in rows %}
-                <tr>
-                    {% for col in cols %}
-                        <td><div id="{{ row }}_{{ col }}" class="cell">_</a></td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </table>
+        <div id="piece_select">
+            <div id="piece_{{ x_char }}" class="piece_option">{{ x_char }}</div>
+            <div id="piece_{{ o_char }}" class="piece_option">{{ o_char }}</div>
+        </div>
+        <div id="board" style="display: none">
+            <table>
+                {% for row in rows %}
+                    <tr>
+                        {% for col in cols %}
+                            <td><div id="{{ row }}_{{ col }}" class="cell">_</a></td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
 {% endblock %}

@@ -114,7 +114,12 @@ def ai_move(request):
     
     ai_char, player_char = char_move_order(board)
     
-    best_value = -2 # Lower than lowest possible value
+    if ai_char == o_char:
+        best_value = -2 # Lower than lowest possible value
+        compare = cmp
+    else:
+        best_value = 2 # Higher than highest possible value
+        compare = lambda x, y: cmp(y, x)
     best_move = None
     
     for i, row in enumerate(board):
@@ -131,7 +136,7 @@ def ai_move(request):
                 value = board_value(board, player_char, ai_char, -2, 2) # Lower and higher than min and max possible values
                 board[i][j] = None
                 
-                if value > best_value:
+                if compare(value, best_value) > 0:
                     best_value = value
                     best_move = move
     
