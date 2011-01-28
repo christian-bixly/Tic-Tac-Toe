@@ -30,15 +30,26 @@
                     row = results[1],
                     col = results[2];
                 
-                board[row][col] = player_char;
-                $(this).html(player_char);
+                set_char_at(row, col, player_char);
                 
                 game_loop();
             });
         });
         
+        function ai_char(){
+            if(player_char == x_char)
+                return o_char;
+            else
+                return x_char;
+        }
+        
         function char_at(row, col){
             return board[row][col];
+        }
+        
+        function set_char_at(row, col, ch){
+            board[row][col] = ch;
+            $('#'+row+'_'+col).html(ch);
         }
         
         function game_loop(){
@@ -145,7 +156,12 @@
             
             if(char_to_move() != player_char){
                 // AI to move
-                $.post();
+                
+                // Unbind user click event on board cells
+                
+                // Show thinking throbber
+                
+                $.post('{% url ai_move %}', {'board': JSON.stringify(board)}, ai_move, 'json');
             }
         }
         
@@ -166,6 +182,18 @@
                 return x_char;
             else
                 return o_char;
+        }
+        
+        function ai_move(data){
+            var row = data['row'],
+                col = data['col'];
+            
+            set_char_at(row, col, ai_char());
+            
+            // Rebind user events on board
+            // Hide throbbler
+            
+            game_loop();
         }
         
         function player_victory(){
