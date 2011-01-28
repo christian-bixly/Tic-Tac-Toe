@@ -120,13 +120,20 @@ def ai_move(request):
     for i, row in enumerate(board):
         for j, cell in enumerate(row):
             if cell is None:
+                move = {'row': i, 'col': j}
+                
                 board[i][j] = ai_char
+                
+                if(board_winner(board) == ai_char):
+                    # We've won, make this move
+                    return HttpResponse(json.dumps(move))
+                    
                 value = board_value(board, player_char, ai_char, -2, 2) # Lower and higher than min and max possible values
                 board[i][j] = None
                 
                 if value > best_value:
                     best_value = value
-                    best_move = {'row': i, 'col': j}
+                    best_move = move
     
     return HttpResponse(json.dumps(best_move))
     
