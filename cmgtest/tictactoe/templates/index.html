@@ -12,37 +12,22 @@
             board = [];
         
         $(document).ready(function(){
-            init_board();
-            
             $('#start_over_button').click(function(){
-                init_board();
-                
+                $('#start_over_button').hide();
                 $('#board').hide();
                 $('#piece_select').show();
             });
             
             $('.piece_option').click(function(){
+                init_board();
+                
                 var results = $(this).attr('id').match(/^piece_({{x_char}}|{{ o_char }})$/);
                 
                 player_char = results[1];
                 
                 $('#piece_select').hide();
                 $('#board').show();
-                
-                game_loop();
-            });
-            
-            $('.cell').click(function(){
-                if($(this).html() != '_'){
-                    alert('Illegal move!');
-                    return;
-                }
-                
-                var results = $(this).attr('id').match(/^(\d)_(\d)$/),
-                    row = results[1],
-                    col = results[2];
-                
-                set_char_at(row, col, player_char);
+                $('#start_over_button').show();
                 
                 game_loop();
             });
@@ -58,6 +43,30 @@
             }
             
             $('.cell').html('_');
+        }
+        
+        function cell_clicked(){
+            if($(this).html() != '_'){
+                alert('Illegal move!');
+                return;
+            }
+            
+            var results = $(this).attr('id').match(/^(\d)_(\d)$/),
+                row = results[1],
+                col = results[2];
+            
+            set_char_at(row, col, player_char);
+            
+            game_loop();
+        }
+        
+        function bind_cell_handlers(){
+            unbind_cell_handlers();
+            $('.cell').click(cell_clicked);
+        }
+        
+        function unbind_cell_handlers(){
+            $('.cell').unbind('click', cell_clicked);
         }
         
         function ai_char(){
@@ -182,10 +191,17 @@
                 // AI to move
                 
                 // Unbind user click event on board cells
+                unbind_cell_handlers();
                 
                 // Show thinking throbber
                 
                 $.post('{% url ai_move %}', {'board': JSON.stringify(board)}, ai_move, 'json');
+            }
+            else{
+                // Rebind user events on board
+                bind_cell_handlers();
+                
+                // Hide throbbler
             }
         }
         
@@ -214,22 +230,29 @@
             
             set_char_at(row, col, ai_char());
             
-            // Rebind user events on board
-            // Hide throbbler
-            
             game_loop();
         }
         
         function player_victory(){
             alert('You won!');
+            
+            game_finish();
         }
         
         function ai_victory(){
             alert('You lost');
+            
+            game_finish();
         }
         
         function no_victory(){
             alert("It's a draw!");
+            
+            game_finish();
+        }
+        
+        function game_finish(){
+            unbind_cell_handlers();
         }
     </script>
 {% endblock %}
@@ -254,6 +277,6 @@
                 {% endfor %}
             </table>
         </div>
-        <div id="start_over_button" class="button">Start Over</div>
+        <div id="start_over_button" class="button" style="display: none">Start Over</div>
     </div>
 {% endblock %}
