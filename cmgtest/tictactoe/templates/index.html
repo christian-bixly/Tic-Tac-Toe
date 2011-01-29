@@ -194,14 +194,13 @@
                 unbind_cell_handlers();
                 
                 // Show thinking throbber
+                $('#throbber').show();
                 
                 $.post('{% url ai_move %}', {'board': JSON.stringify(board)}, ai_move, 'json');
             }
             else{
                 // Rebind user events on board
                 bind_cell_handlers();
-                
-                // Hide throbbler
             }
         }
         
@@ -229,6 +228,9 @@
                 col = data['col'];
             
             set_char_at(row, col, ai_char());
+            
+            // Hide throbbler
+            $('#throbber').hide();
             
             game_loop();
         }
@@ -278,5 +280,6 @@
             </table>
         </div>
         <div id="start_over_button" class="button" style="display: none">Start Over</div>
+        <img id="throbber" src="img/throbber.gif" style="display: none" />
     </div>
 {% endblock %}
