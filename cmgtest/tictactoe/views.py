@@ -1,6 +1,8 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+from models import TTTSession
 import json
+import re
 
 x_char = 'X'
 o_char = 'O'
@@ -12,6 +14,22 @@ def index(request):
         'rows': range(3),
         'cols': range(3)
     })
+
+def start_game(request):
+    # Generate new session
+    ttt_session = TTTSession.new_session()
+    
+    return HttpResponse(json.dumps({'session': ttt_session.session}))
+
+def end_game(request):
+    try:
+        ttt_session = TTTSession.objects.get(session=request.POST.get('session'))
+    except TTTSession.DoesNotExist:
+        return HttpResponse(json.dumps('dup'))
+    else:
+        ttt_session.delete()
+        
+        return HttpResponse(json.dumps('ok'))
 
 def char_move_order(board):
     n_x = 0
@@ -109,8 +127,28 @@ def board_value(board, cur_char, next_char, alpha, beta):
     
     return {o_char: alpha, x_char: beta}[cur_char]
 
+def stringify_board(board):
+    return "".join([str(item) if item is not None else '_' for sublist in board for item in sublist])
+
 def ai_move(request):
+    # Load the session
+    session = request.POST.get('session')
+    
+    try:
+        ttt_session = TTTSession.objects.get(session=session)
+    except TTTSession.DoesNotExist:
+        return HttpResponse(json.dumps({'success': False, 'error': 'invalid session'}))
+    
     board = json.loads(request.POST.get('board'))
+    
+    # Validate board before proceeding
+    str_board = stringify_board(board)
+    
+    if re.match('.*[^%s%s_]' % (x_char, o_char), str_board) is not None:
+        return HttpResponse(json.dumps({'success': False, 'error': 'invalid board char'}))
+    
+    if not ttt_session.validate_against(str_board):
+        return HttpResponse(json.dumps({'success': False, 'error': 'invalid board state'}))
     
     ai_char, player_char = char_move_order(board)
     
@@ -131,7 +169,10 @@ def ai_move(request):
                 
                 if(board_winner(board) == ai_char):
                     # We've won, make this move
-                    return HttpResponse(json.dumps(move))
+                    ttt_session.board = stringify_board(board)
+                    ttt_session.save()
+                    
+                    return HttpResponse(json.dumps({'success': True, 'move': move}))
                     
                 value = board_value(board, player_char, ai_char, -2, 2) # Lower and higher than min and max possible values
                 board[i][j] = None
@@ -140,8 +181,12 @@ def ai_move(request):
                     best_value = value
                     best_move = move
     
-    return HttpResponse(json.dumps(best_move))
+    # Update board stored with session
+    board[best_move['row']][best_move['col']] = ai_char
+    ttt_session.board = stringify_board(board)
+    ttt_session.save()
+    
+    return HttpResponse(json.dumps({'success': True, 'move': best_move}))
     
 # TODO:
-# Implement ability to choose player's piece
 # Fix up UI

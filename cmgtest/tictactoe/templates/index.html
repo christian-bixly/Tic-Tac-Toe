@@ -9,17 +9,20 @@
         var x_char = '{{ x_char }}',
             o_char = '{{ o_char }}',
             player_char = null,
+            session = null,
             board = [];
         
         $(document).ready(function(){
             $('#start_over_button').click(function(){
+                end_game();
+                
                 $('#start_over_button').hide();
                 $('#board').hide();
                 $('#piece_select').show();
             });
             
             $('.piece_option').click(function(){
-                init_board();
+                init_game();
                 
                 var results = $(this).attr('id').match(/^piece_({{x_char}}|{{ o_char }})$/);
                 
@@ -31,9 +34,25 @@
                 
                 game_loop();
             });
+            
+            $(window).unload(end_game);
         });
         
-        function init_board(){
+        function init_game(){
+            $('#throbber').show();
+            
+            // Get session id from server
+            $.ajax({
+                async: false,
+                url: '{% url start_game %}',
+                success: function(data){
+                    session = data['session'];
+                },
+                dataType: 'json'
+            });
+            
+            $('#throbber').hide();
+            
             // Initialize board
             for(var i = 0; i < 3; i++){
                 board[i] = [];
@@ -43,6 +62,13 @@
             }
             
             $('.cell').html('_');
+        }
+        
+        function end_game(){
+            if(session){
+                $.post('{% url end_game %}', {'session': session});
+                session = null;
+            }
         }
         
         function cell_clicked(){
@@ -196,7 +222,7 @@
                 // Show thinking throbber
                 $('#throbber').show();
                 
-                $.post('{% url ai_move %}', {'board': JSON.stringify(board)}, ai_move, 'json');
+                $.post('{% url ai_move %}', {'session': session, 'board': JSON.stringify(board)}, ai_move, 'json');
             }
             else{
                 // Rebind user events on board
@@ -224,8 +250,14 @@
         }
         
         function ai_move(data){
-            var row = data['row'],
-                col = data['col'];
+            if(!data['success']){
+                alert('An error has occurred: '+data['error']);
+                game_finish();
+                return;
+            }
+            
+            var row = data['move']['row'],
+                col = data['move']['col'];
             
             set_char_at(row, col, ai_char());
             
@@ -254,6 +286,8 @@
         }
         
         function game_finish(){
+            end_game();
+            
             unbind_cell_handlers();
         }
     </script>
