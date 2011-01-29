@@ -12,13 +12,14 @@
             board = [];
         
         $(document).ready(function(){
-            // Initialize board
-            for(var i = 0; i < 3; i++){
-                board[i] = [];
-                for(var j = 0; j < 3; j++){
-                    board[i][j] = null;
-                }
-            }
+            init_board();
+            
+            $('#start_over_button').click(function(){
+                init_board();
+                
+                $('#board').hide();
+                $('#piece_select').show();
+            });
             
             $('.piece_option').click(function(){
                 var results = $(this).attr('id').match(/^piece_({{x_char}}|{{ o_char }})$/);
@@ -46,6 +47,18 @@
                 game_loop();
             });
         });
+        
+        function init_board(){
+            // Initialize board
+            for(var i = 0; i < 3; i++){
+                board[i] = [];
+                for(var j = 0; j < 3; j++){
+                    board[i][j] = null;
+                }
+            }
+            
+            $('.cell').html('_');
+        }
         
         function ai_char(){
             if(player_char == x_char)
@@ -223,6 +236,9 @@
 
 {% block content %}
     <div id="stage">
+        <div style="text-align: center">
+            <h1>Tic Tac Toe</h1>
+        </div>
         <div id="piece_select">
             <div id="piece_{{ x_char }}" class="piece_option">{{ x_char }}</div>
             <div id="piece_{{ o_char }}" class="piece_option">{{ o_char }}</div>
@@ -232,11 +248,12 @@
                 {% for row in rows %}
                     <tr>
                         {% for col in cols %}
-                            <td><div id="{{ row }}_{{ col }}" class="cell">_</a></td>
+                            <td><div id="{{ row }}_{{ col }}" class="cell"></a></td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
             </table>
         </div>
+        <div id="start_over_button" class="button">Start Over</div>
     </div>
 {% endblock %}

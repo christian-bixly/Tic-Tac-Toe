@@ -1,10 +1,9 @@
 div#stage {
-    width:600px;
+    width:240px;
     margin-left:auto;
     margin-right:auto;
 }
-	.button.large { font-size: 125%; padding: 7px 12px; }
-	.button.large:active { padding: 8px 12px 6px; background-position: 0 top; }
+
 .piece_option {
     padding: 16px 32px;
     display: inline;
@@ -29,4 +28,30 @@ div#stage {
     position: relative;
     top: 1px;
     padding: 12px 20px 8px;
+}
+
+.cell {
+    padding: 5px 10px;
+    display: inline;
+    background: #fff url(img/button.png) repeat-x bottom;
+    border: none;
+    color: #000;
+    cursor: pointer;
+    font-size: 300%;
+    font-weight: bold;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    text-shadow: 1px 1px #fff;
+}
+
+.cell:hover {
+    background-position: 0 center;
+}
+
+.cell:active {
+    background-position: 0 top;
+    position: relative;
+    top: 1px;
+    padding: 6px 10px 4px;
 }
