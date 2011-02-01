@@ -12,7 +12,7 @@ class TTTSession(models.Model):
             try:
                 session = uuid.uuid4().hex
                 
-                ttt_session = cls.objects.create(session=session, board='_' * 9)
+                ttt_session = cls.objects.create(session=session, board=' ' * 9)
             except Exception, e:
                 print e
                 continue
@@ -25,7 +25,8 @@ class TTTSession(models.Model):
         
         # Assumes only valid board characters
         for ch1, ch2 in zip(self.board, board):
-            if ch1 != ch2 and ch1 != '_':
+            print (ch1, ch2)
+            if ch1 != ch2 and ch1 != ' ':
                 return False
         
         return True

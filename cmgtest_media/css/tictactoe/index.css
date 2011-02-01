@@ -1,57 +1,97 @@
 div#stage {
-    width:240px;
-    margin-left:auto;
-    margin-right:auto;
+    position: relative;
+    width: 300px;
+    padding: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #000000;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+
+#title {
+    color: #ffffff;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+#piece_select {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    text-align: center;
 }
 
 .piece_option {
-    padding: 16px 32px;
+    position: relative;
     display: inline;
-    background: #fff url(img/button.png) repeat-x bottom;
-    border: none;
+    padding: 8px 15px;
+    margin: 20px;
+    background: #e2e2e2 url(img/button.png) repeat-x top;
+    border: 1px solid #878787;
     color: #000;
-    cursor: pointer;
-    font-size: 400%;
+    font-size: 40px;
     font-weight: bold;
     border-radius: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     text-shadow: 1px 1px #fff;
+    cursor: pointer;
 }
 
 .piece_option:hover {
-    background-position: 0 center;
+    background-color: #4b4b4b;
 }
 
 .piece_option:active {
-    background-position: 0 top;
-    position: relative;
-    top: 1px;
-    padding: 12px 20px 8px;
+    background-color: #303030;
+}
+
+#board {
+    width: 200px;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#board table {
+    border: none;
+    margin: auto;	
+}
+
+#board table td {
+    height: 50px;
+    width: 50px;
+    padding: 0px;
+    background-color: white;
+    cursor: pointer;
 }
 
 .cell {
-    padding: 5px 10px;
-    display: inline;
-    background: #fff url(img/button.png) repeat-x bottom;
-    border: none;
+    text-align: center;
+    padding-top: 2px;
     color: #000;
-    cursor: pointer;
-    font-size: 300%;
+    font-size: 30px;
     font-weight: bold;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
     text-shadow: 1px 1px #fff;
 }
 
-.cell:hover {
-    background-position: 0 center;
+#board table td:hover {
+    background-color: #7b7b7b;
 }
 
-.cell:active {
-    background-position: 0 top;
-    position: relative;
-    top: 1px;
-    padding: 6px 10px 4px;
+#board table td:active {
+    
+}
+
+#throbber {
+    position: absolute;
+    bottom: 0px;
+    margin-bottom: 5px;
+}
+
+#msg {
+text-align: center;
+color: red;
+font-family: Arial;
 }

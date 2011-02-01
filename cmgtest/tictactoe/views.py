@@ -128,7 +128,7 @@ def board_value(board, cur_char, next_char, alpha, beta):
     return {o_char: alpha, x_char: beta}[cur_char]
 
 def stringify_board(board):
-    return "".join([str(item) if item is not None else '_' for sublist in board for item in sublist])
+    return "".join([str(item) if item is not None else ' ' for sublist in board for item in sublist])
 
 def ai_move(request):
     # Load the session
@@ -144,7 +144,7 @@ def ai_move(request):
     # Validate board before proceeding
     str_board = stringify_board(board)
     
-    if re.match('.*[^%s%s_]' % (x_char, o_char), str_board) is not None:
+    if re.match('.*[^%s%s ]' % (x_char, o_char), str_board) is not None:
         return HttpResponse(json.dumps({'success': False, 'error': 'invalid board char'}))
     
     if not ttt_session.validate_against(str_board):

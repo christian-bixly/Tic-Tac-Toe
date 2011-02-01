@@ -19,6 +19,8 @@
                 $('#start_over_button').hide();
                 $('#board').hide();
                 $('#piece_select').show();
+                
+                $('#msg').html('');
             });
             
             $('.piece_option').click(function(){
@@ -61,7 +63,7 @@
                 }
             }
             
-            $('.cell').html('_');
+            $('.cell').html(' ');
         }
         
         function end_game(){
@@ -72,27 +74,32 @@
         }
         
         function cell_clicked(){
-            if($(this).html() != '_'){
-                alert('Illegal move!');
-                return;
-            }
+            var cell = $(this).find('.cell');
             
-            var results = $(this).attr('id').match(/^(\d)_(\d)$/),
+            if(cell.html() != ' '){
+                $('#msg').html('Illegal move!');
+                return false;
+            }
+            $('#msg').html('');
+            
+            var results = cell.attr('id').match(/^(\d)_(\d)$/),
                 row = results[1],
                 col = results[2];
             
             set_char_at(row, col, player_char);
             
             game_loop();
+            
+            return false;
         }
         
         function bind_cell_handlers(){
             unbind_cell_handlers();
-            $('.cell').click(cell_clicked);
+            $('#board table td').click(cell_clicked);
         }
         
         function unbind_cell_handlers(){
-            $('.cell').unbind('click', cell_clicked);
+            $('#board table td').unbind('click', cell_clicked);
         }
         
         function ai_char(){
@@ -251,7 +258,7 @@
         
         function ai_move(data){
             if(!data['success']){
-                alert('An error has occurred: '+data['error']);
+                $('#msg').html('An error has occurred: '+data['error']);
                 game_finish();
                 return;
             }
@@ -268,19 +275,19 @@
         }
         
         function player_victory(){
-            alert('You won!');
+            $('#msg').html('You won!');
             
             game_finish();
         }
         
         function ai_victory(){
-            alert('You lost');
+            $('#msg').html('You lost');
             
             game_finish();
         }
         
         function no_victory(){
-            alert("It's a draw!");
+            $('#msg').html("It's a draw!");
             
             game_finish();
         }
@@ -296,13 +303,14 @@
 {% block content %}
     <div id="stage">
         <div style="text-align: center">
-            <h1>Tic Tac Toe</h1>
+            <h1 id="title">Tic Tac Toe</h1>
         </div>
         <div id="piece_select">
             <div id="piece_{{ x_char }}" class="piece_option">{{ x_char }}</div>
             <div id="piece_{{ o_char }}" class="piece_option">{{ o_char }}</div>
         </div>
         <div id="board" style="display: none">
+            <div id="msg"></div>
             <table>
                 {% for row in rows %}
                     <tr>
