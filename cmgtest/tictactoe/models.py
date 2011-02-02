@@ -25,7 +25,6 @@ class TTTSession(models.Model):
         
         # Assumes only valid board characters
         for ch1, ch2 in zip(self.board, board):
-            print (ch1, ch2)
             if ch1 != ch2 and ch1 != ' ':
                 return False
         

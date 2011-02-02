@@ -187,6 +187,3 @@ def ai_move(request):
     ttt_session.save()
     
     return HttpResponse(json.dumps({'success': True, 'move': best_move}))
-    
-# TODO:
-# Fix up UI
