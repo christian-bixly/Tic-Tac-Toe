@@ -2,9 +2,17 @@
 
 {% block extra_css %}
     <link rel='stylesheet' type='text/css' href='css/tictactoe/index.css' />
+    
+    {% if test %}
+        <link rel='stylesheet' type='text/css' href='css/qunit.css' />
+    {% endif %}
 {% endblock %}
 
 {% block extra_js %}
+    {% if test %}
+        <script type='text/javascript' src='js/qunit.js'></script>
+    {% endif %}
+
     <script type="text/javascript">
         var x_char = '{{ x_char }}',
             o_char = '{{ o_char }}',
@@ -71,6 +79,10 @@
                 $.post('{% url end_game %}', {'session': session});
                 session = null;
             }
+            
+            {% if test %}
+                reset_test_vars();
+            {% endif %}
         }
         
         function cell_clicked(){
@@ -87,6 +99,10 @@
                 col = results[2];
             
             set_char_at(row, col, player_char);
+            
+            {% if test %}
+                end_turn_test();
+            {% endif %}
             
             game_loop();
             
@@ -232,7 +248,7 @@
                 $.post('{% url ai_move %}', {'session': session, 'board': JSON.stringify(board)}, ai_move, 'json');
             }
             else{
-                // Rebind user events on board
+                // Player to move, rebind user events on board
                 bind_cell_handlers();
             }
         }
@@ -268,6 +284,10 @@
             
             set_char_at(row, col, ai_char());
             
+            {% if test %}
+                end_turn_test();
+            {% endif %}
+            
             // Hide throbbler
             $('#throbber').hide();
             
@@ -297,6 +317,44 @@
             
             unbind_cell_handlers();
         }
+        
+        {% if test %}
+            var turn_num = 0;
+            
+            function reset_test_vars(){
+                turn_num = 0;
+            }
+        
+            function end_turn_test(){
+                turn_num = turn_num + 1;
+                
+                test('Tests pieces on the displayed board for consistency', function(){
+                    ch_count = {};
+                    ch_count[x_char] = 0;
+                    ch_count[o_char] = 0;
+                    $('.cell').each(function(){
+                        ch = $(this).html();
+                        
+                        if(ch != ' '){
+                            ok(ch_count.hasOwnProperty(ch));
+                            
+                            ch_count[ch] = ch_count[ch] + 1;
+                        }
+                    });
+                    
+                    equals(ch_count[x_char] + ch_count[o_char], turn_num);
+                    
+                    var diff = ch_count[x_char] - ch_count[o_char];
+                    
+                    if(turn_num % 2 == 0){
+                        equals(diff, 0);
+                    }
+                    else{
+                        equals(diff, 1);
+                    }
+                });
+            }
+        {% endif %}
     </script>
 {% endblock %}
 
@@ -324,4 +382,11 @@
         <div id="start_over_button" class="button" style="display: none">Start Over</div>
         <img id="throbber" src="img/throbber.gif" style="display: none" />
     </div>
+    {% if test %}
+        <h1 id="qunit-header">QUnit tests</h1>
+        <h2 id="qunit-banner"></h2>
+        <div id="qunit-testrunner-toolbar"></div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests"></ol>
+    {% endif %}
 {% endblock %}

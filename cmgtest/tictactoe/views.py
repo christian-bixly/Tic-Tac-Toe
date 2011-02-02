@@ -12,7 +12,8 @@ def index(request):
         'x_char': x_char,
         'o_char': o_char,
         'rows': range(3),
-        'cols': range(3)
+        'cols': range(3),
+        'test': True
     })
 
 def start_game(request):
