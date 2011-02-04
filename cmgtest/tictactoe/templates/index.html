@@ -56,6 +56,10 @@
                 async: false,
                 url: '{% url start_game %}',
                 success: function(data){
+                    if(data['session'] == null){
+                        $('#msg').html('An error has occurred.');
+                    }
+                    
                     session = data['session'];
                 },
                 dataType: 'json'

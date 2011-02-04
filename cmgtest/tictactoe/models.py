@@ -15,7 +15,7 @@ class TTTSession(models.Model):
                 ttt_session = cls.objects.create(session=session, board=' ' * 9)
             except Exception, e:
                 print e
-                continue
+                return None
             
             return ttt_session
     

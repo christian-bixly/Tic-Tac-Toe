@@ -89,7 +89,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
-    'django_extensions',
-    'south',
+    #~ 'django_extensions',
+    #~ 'south',
     'tictactoe',
 )

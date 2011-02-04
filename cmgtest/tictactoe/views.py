@@ -13,14 +13,19 @@ def index(request):
         'o_char': o_char,
         'rows': range(3),
         'cols': range(3),
-        'test': True
+        'test': False
     })
 
 def start_game(request):
     # Generate new session
     ttt_session = TTTSession.new_session()
     
-    return HttpResponse(json.dumps({'session': ttt_session.session}))
+    try:
+        session = ttt_session.session
+    except AttributeError:
+        session = None
+    
+    return HttpResponse(json.dumps({'session': session}))
 
 def end_game(request):
     try:
